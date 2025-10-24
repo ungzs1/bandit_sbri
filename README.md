@@ -2,6 +2,9 @@
 
 This repository contains the code used to reproduce the figures and analyses presented in the manuscript *“Neural dynamics reveal foraging-like computations in the frontal cortex.”* It includes preprocessing, modeling, and visualization scripts as well as example data to demonstrate the workflow.
 
+The provided source code was used to generate results in the manuscript. The example dataset included in this repository is a **small subset** of the full dataset used in the manuscript. Therefore, results are not exactly matching those in the manuscript.
+
+
 ---
 
 ## 1. System Requirements
@@ -174,8 +177,6 @@ Results will be saved automatically in `data/results/`, from where the correspon
 
 * All figure notebooks should execute within tens of seconds.
 * Analysis scripts may take longer (typically from a few minutes to several hours).
-
-The provided source code was used to generate results in the manuscript. The example dataset included in this repository is a **small subset** of the full dataset used in the manuscript. Therefore, results are not exactly matching those in the manuscript.
 
 ---
 
