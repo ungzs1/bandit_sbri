@@ -46,7 +46,7 @@ All software dependencies are specified in the [`environment.yml`](environment.y
 
 4. Download demo neural data.
    
-   Demo neural data containing 4 sessions recordings data can be downloaded from the following link: [Data Download Link](https://drive.google.com/drive/folders/1rYJ3Y9bX6K4v5X1a2b3c4d5e6f7g8h9i?usp=sharing) as a zip file. Data needs to be extracted to the `data/processed/neural_data/` folder.
+   Demo neural data containing 4 sessions recordings data can be downloaded from the following link: [Data Download Link](https://sdrive.cnrs.fr/s/yBL5aYG94G8KKsx) as a zip file. Data needs to be extracted to the `data/processed/neural_data/` folder.
 
 ### Option 2 — Manual Setup
 
@@ -80,7 +80,68 @@ bandit_sbri/
 
 ---
 
-## 4. Instructions for Use
+## 4. Data structure
+
+The provided demo dataset contains behavioral data from **two monkeys**, each recorded across **two experimental sessions** (four sessions total). 
+
+### Behavioral data
+
+Behavioral data is stored in a pandas DataFrame, located `data/processed/behavior/behavior_kapo.pkl`. Each row corresponds to a single trial, containing information about session context, choices, outcomes, and switching behavior.
+
+The DataFrame has the following attributes:
+
+| Column          | Description                                                                                                                                 |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| **monkey**      | Identifier for the monkey (e.g., `"ka"`, `"po"`).                                                                                           |
+| **session**     | Session identifier (e.g., `"020622"`). Each monkey has two sessions.                                                                        |
+| **trial_id**    | Sequential trial number within a session.                                                                                                   |
+| **block_id**    | Identifier for experimental block within a session.                                                                                         |
+| **best_target** | Target with high payoff for that trial/block.                                                                                  |
+| **target**      | Target chosen by the monkey during the trial.                                                                                               |
+| **feedback**    | Feedback or reward indicator (e.g., `1.0` = rewarded, `0.0` = not rewarded).                                                                |
+| **switch**      | Indicates if the monkey switched choices compared to the previous trial (e.g., `1.0` = switch, `0.0` = stay). May be `NaN` on first trials. |
+
+Demo behavioral data file is included in the repository.
+
+### Neural data
+
+Neural data is stored in individual files for each session, located in `data/processed/neural_data/<MONKEY>_<SESSION>_spikes.nc`. The data are stored in NetCDF format (.nc), structured as an ```xarray``` ```Dataset``` containing spiking activity aligned to task events (in short, xarray is a Python library for working with labeled numpy arrays). The main data array contains binary spike trains (1 = spike, 0 = no spike) for multiple recorded units over time. 
+
+The Dataset has the following structure:
+
+| Component       | Description                                                                                                 |
+| --------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Dimensions**  | (`unit`, `time`)                                                                                              |
+| **Variables**   | `__xarray_dataarray_variable__` — main spike data array (binary, shape `[unit, time]`) |
+| **Coordinates** | Metadata aligned with each `unit` or `time` dimension                                                       |
+
+The coordinates provide additional context for each dimension:
+
+| Coordinate           | Dimension | Description                                                 |
+| -------------------- | --------- | ----------------------------------------------------------- |
+| **unit**             | `unit`    | Index of recorded neural units.                            |
+| **time**             | `time`    | Continuous time points of recording.                       |
+| **unit_id_original** | `unit`    | Original identifier for the unit from acquisition software. |
+| **channel**          | `unit`    | Electrode channel number associated with the unit.          |
+| **monkey**           | `unit`    | Monkey identifier (e.g., `"po"`).                           |
+| **session**          | `unit`    | Session identifier (e.g., `"240921"`).                      |
+| **area**             | `unit`    | Brain area of the recording site (e.g., MCC or LPFC).       |
+| **subregion**        | `unit`    | Subdivision within the recorded area (e.g., vLPFC or dLPFC).|
+| **trial_id**         | `time`    | Behavioral trial associated with each time segment.         |
+| **epoch_id**         | `time`    | Epoch in the trial    |
+
+For inspection, the neural data can be loaded as follows:
+
+```python
+import xarray as xr
+
+ds = xr.load_dataset('/<YOUR>/<PATH>/bandit_sbri/data/processed/neural_data/ka_210322_spikes.nc')
+print(ds)
+```
+
+Demo neural data files are available for download as described in the Installation Guide.
+
+## 5. Instructions for Use
 
 ### Generating Figures
 
@@ -111,14 +172,14 @@ Results will be saved automatically in `data/results/`, from where the correspon
 
 ### Expected Runtime
 
-* All figure notebooks should execute within **tens of seconds**.
+* All figure notebooks should execute within tens of seconds.
 * Analysis scripts may take longer (typically from a few minutes to several hours).
 
 The provided source code was used to generate results in the manuscript. The example dataset included in this repository is a **small subset** of the full dataset used in the manuscript. Therefore, results are not exactly matching those in the manuscript.
 
 ---
 
-## 5. Citation
+## 6. Citation
 
 If you use this code or reproduce analyses in your own work, please cite the following:
 
@@ -126,7 +187,7 @@ If you use this code or reproduce analyses in your own work, please cite the fol
 
 ---
 
-## 6. Contact
+## 7. Contact
 
 For questions, bug reports, or requests for the full dataset, please contact:
 **Zsombor Ungvaszki**
